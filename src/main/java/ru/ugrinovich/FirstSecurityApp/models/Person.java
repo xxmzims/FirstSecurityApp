@@ -21,14 +21,14 @@ public class Person {
 
     @Column(name = "year_of_birth")
     @Min(value = 1900, message = "Год рождение должен быть больше, чем " + "1900")
-    private int year_of_birth;
+    private int yearOfBirth;
 
     @Column(name = "password")
     private String password;
 
     public Person(String username, int year_of_birth, String password) {
         this.username = username;
-        this.year_of_birth = year_of_birth;
+        this.yearOfBirth = year_of_birth;
         this.password = password;
     }
 
@@ -60,12 +60,12 @@ public class Person {
     }
 
     @Min(value = 1900, message = "Год рождение должен быть больше, чем " + "1900")
-    public int getYear_of_birth() {
-        return year_of_birth;
+    public int getYearOfBirth() {
+        return yearOfBirth;
     }
 
-    public void setYear_of_birth(@Min(value = 1900, message = "Год рождение должен быть больше, чем " + "1900") int year_of_birth) {
-        this.year_of_birth = year_of_birth;
+    public void setYearOfBirth(@Min(value = 1900, message = "Год рождение должен быть больше, чем " + "1900") int year_of_birth) {
+        this.yearOfBirth = year_of_birth;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class Person {
         return "Person{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", year_of_birth=" + year_of_birth +
+                ", year_of_birth=" + yearOfBirth +
                 ", password='" + password + '\'' +
                 '}';
     }
