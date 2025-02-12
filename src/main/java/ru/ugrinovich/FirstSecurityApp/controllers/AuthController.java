@@ -1,26 +1,32 @@
 package ru.ugrinovich.FirstSecurityApp.controllers;
 
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import ru.ugrinovich.FirstSecurityApp.dto.PersonDTO;
+import ru.ugrinovich.FirstSecurityApp.dto.PersonMapper;
 import ru.ugrinovich.FirstSecurityApp.models.Person;
+import ru.ugrinovich.FirstSecurityApp.security.JWTUtil;
 import ru.ugrinovich.FirstSecurityApp.services.RegistrationService;
 import ru.ugrinovich.FirstSecurityApp.util.PersonValidator;
 
-@Controller
+@RestController
 @RequestMapping("/auth")
 public class AuthController {
 
     private final RegistrationService registrationService;
     private final PersonValidator personValidator;
+    private final JWTUtil jwtUtil;
+    private final PersonMapper personMapper;
 
-    public AuthController(RegistrationService registrationService, PersonValidator personValidator) {
+    public AuthController(RegistrationService registrationService, PersonValidator personValidator, JWTUtil jwtUtil, PersonMapper personMapper) {
         this.registrationService = registrationService;
         this.personValidator = personValidator;
+        this.jwtUtil = jwtUtil;
+
+        this.personMapper = personMapper;
     }
 
     @GetMapping("/login")
@@ -34,15 +40,17 @@ public class AuthController {
         return "auth/registration";
     }
     @PostMapping("/registration")
-    public String performRegistration(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult){
+    public ResponseEntity<String> performRegistration(@RequestBody @Valid PersonDTO personDTO, BindingResult bindingResult){
+        Person person = personMapper.fromPersonCreateDTO(personDTO);
         personValidator.validate(person, bindingResult);
 
         if(bindingResult.hasErrors())
-            return "auth/registration";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getFieldErrors().toString());
 
         registrationService.register(person);
 
-        return "redirect:/auth/login";
+        String token = jwtUtil.generateToken(person.getUsername());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
     }
 }
 
