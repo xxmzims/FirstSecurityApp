@@ -1,10 +1,12 @@
 package ru.ugrinovich.FirstSecurityApp.security;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.ugrinovich.FirstSecurityApp.models.Person;
 
 import java.util.Collection;
+import java.util.Collections;
 
 // класс обертка над сущностью
 //реализуем UserDetails для стандартиризации класса UserDetails со всей нужной информацией для аутентификации
@@ -42,7 +44,8 @@ public class PersonDetails implements UserDetails {
     // список прав пользователя
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;// в будущем возвращаем роли
+
+        return Collections.singletonList(new SimpleGrantedAuthority(person.getRole()));
     }
 
     @Override
